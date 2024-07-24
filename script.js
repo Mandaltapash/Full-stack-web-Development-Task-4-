@@ -1,58 +1,27 @@
-let display = document.getElementById('display');
-let currentOperand = '';
-let previousOperand = '';
-let operation = undefined;
+const display = document.querySelector(".display");
+const buttons = document.querySelectorAll("button");
+const specialChars = ["%", "*", "/", "-", "+", "="];
+let output = "";
 
-function appendNumber(number) {
-    if (number === '.' && currentOperand.includes('.')) return;
-    currentOperand = currentOperand.toString() + number.toString();
-    updateDisplay();
-}
+const calculate = (btnValue) => {
+    display.focus();
+    if (btnValue === "=" && output !== "") {
 
-function chooseOperation(op) {
-    if (currentOperand === '') return;
-    if (previousOperand !== '') {
-        compute();
+        output = eval(output.replace("%", "/100"));
+    } else if (btnValue === "AC") {
+        output = "";
+    } else if (btnValue === "DEL") {
+
+        output = output.toString().slice(0, -1);
+    } else {
+
+        if (output === "" && specialChars.includes(btnValue)) return;
+        output += btnValue;
     }
-    operation = op;
-    previousOperand = currentOperand;
-    currentOperand = '';
-}
+    display.value = output;
+};
 
-function compute() {
-    let computation;
-    const prev = parseFloat(previousOperand);
-    const current = parseFloat(currentOperand);
-    if (isNaN(prev) || isNaN(current)) return;
-    switch (operation) {
-        case '+':
-            computation = prev + current;
-            break;
-        case '-':
-            computation = prev - current;
-            break;
-        case '*':
-            computation = prev * current;
-            break;
-        case '/':
-            computation = prev / current;
-            break;
-        default:
-            return;
-    }
-    currentOperand = computation;
-    operation = undefined;
-    previousOperand = '';
-    updateDisplay();
-}
 
-function clearDisplay() {
-    currentOperand = '';
-    previousOperand = '';
-    operation = undefined;
-    updateDisplay();
-}
-
-function updateDisplay() {
-    display.innerText = currentOperand;
-}
+buttons.forEach((button) => {
+    button.addEventListener("click", (e) => calculate(e.target.dataset.value));
+});
